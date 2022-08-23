@@ -42,7 +42,7 @@ pub fn add(magic: MagicCrypt256) -> Result<(), std::io::Error> {
 
     entries.push(entry);
 
-    entries_file.seek(SeekFrom::Start(0))?;
+    entries_file.seek(SeekFrom::Start(0))?; // idk why this works but not anywhere else
     entries_file.write_all(
         magic
             .encrypt_str_to_base64(serde_json::to_string(&entries).unwrap())
