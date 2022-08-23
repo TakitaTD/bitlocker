@@ -26,7 +26,7 @@ pub fn init(magic: MagicCrypt256) -> Result<(), io::Error> {
         .unwrap();
     let mut entries_str = String::new();
     entries.read_to_string(&mut entries_str);
-    let entries = serde_json::from_str::<Vec<bl_types::Entry>>(
+    let mut entries = serde_json::from_str::<Vec<bl_types::Entry>>(
         magic
             .decrypt_base64_to_string(entries_str)
             .unwrap()
@@ -49,6 +49,10 @@ pub fn init(magic: MagicCrypt256) -> Result<(), io::Error> {
         write!(stdout, "> ")?;
         stdout.flush()?;
         stdin.read_line(&mut buf)?;
+        //if buf.trim() == "q".to_string() {
+        //    writeln!(stdout, "quitting..")?;
+        //    break;
+        //}
         match buf.trim().parse::<u8>() {
             Ok(num) => {
                 if num > 3 {
@@ -64,6 +68,10 @@ pub fn init(magic: MagicCrypt256) -> Result<(), io::Error> {
                 break;
             }
             Err(err) => {
+                if buf.trim() == "q" {
+                    writeln!(stdout, "quitting...")?;
+                    std::process::exit(0);
+                }
                 writeln!(
                     stdout,
                     "{}error:{} {err}",
@@ -77,12 +85,13 @@ pub fn init(magic: MagicCrypt256) -> Result<(), io::Error> {
     match user_input {
         1 => bl_add::add(magic).unwrap(),
         2 => {
-            for entry in &entries {
+            for entry in &mut entries {
                 count += 1;
+                entry.chrono = count;
                 writeln!(
                     stdout,
                     "{}. {}Platform: {}, Username: {}{}",
-                    count,
+                    entry.chrono,
                     SetForegroundColor(Color::Rgb {
                         r: 219,
                         g: 87,
@@ -93,16 +102,24 @@ pub fn init(magic: MagicCrypt256) -> Result<(), io::Error> {
                     SetForegroundColor(Color::White)
                 )?;
             }
+            writeln!(stdout, "Enter \"qq\" to quit.")?;
             loop {
                 write!(stdout, "Search: ")?;
                 let mut buf = String::new();
                 stdout.flush()?;
                 stdin.read_line(&mut buf)?;
+                if buf.trim() == "qq".to_string() {
+                    writeln!(stdout, "quitting...")?;
+                    break;
+                }
                 match buf.trim().parse::<u32>() {
-                    Ok(num) => {}
+                    Ok(num) => {
+                        let entry = &entries[(num - 1) as usize];
+                        writeln!(stdout, "Platform: {}\nUsername: {}\nPassword: {}", entry.platform, entry.username, entry.password)?;
+                    }
                     Err(_) => {
                         let mut count = 0;
-                        for entry in &entries {
+                        for entry in &mut entries {
                             if entry.platform.contains(&buf.trim())
                                 || entry.username.contains(&buf.trim())
                             {
@@ -111,7 +128,7 @@ pub fn init(magic: MagicCrypt256) -> Result<(), io::Error> {
                                 writeln!(
                                     stdout,
                                     "{}. {}Platform: {}, Username: {}{}",
-                                    count,
+                                    entry.chrono,
                                     SetForegroundColor(Color::Rgb {
                                         r: 219,
                                         g: 87,
@@ -126,6 +143,7 @@ pub fn init(magic: MagicCrypt256) -> Result<(), io::Error> {
                     }
                 }
             }
+            init(magic);
         }
         _ => writeln!(stdout, "wot").unwrap(),
     };
