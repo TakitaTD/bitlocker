@@ -68,7 +68,7 @@ pub fn read(magic: MagicCrypt256) -> Result<(), std::io::Error> {
                     let entry = &entries[(num - 1) as usize];
                     writeln!(
                         stdout,
-                        "{}Platform: {}\nUsername: {}\nPassword: {}{}",
+                        "{}Platform: {}, Username: {}\nPassword: {}{}",
                         SetForegroundColor(Color::Rgb {
                             r: 219,
                             g: 87,
