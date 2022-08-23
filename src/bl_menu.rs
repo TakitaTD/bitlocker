@@ -2,6 +2,8 @@
 mod bl_add;
 #[path = "./bl_fs.rs"]
 mod bl_fs;
+#[path = "./bl_read.rs"]
+mod bl_read;
 #[path = "./bl_types.rs"]
 mod bl_types;
 use crossterm::style::{Color, ContentStyle, SetForegroundColor, SetStyle};
@@ -84,71 +86,7 @@ pub fn init(magic: MagicCrypt256) -> Result<(), io::Error> {
     }
     match user_input {
         1 => bl_add::add(magic).unwrap(),
-        2 => {
-            for entry in &mut entries {
-                count += 1;
-                entry.chrono = count;
-                writeln!(
-                    stdout,
-                    "{}. {}Platform: {}, Username: {}{}",
-                    entry.chrono,
-                    SetForegroundColor(Color::Rgb {
-                        r: 219,
-                        g: 87,
-                        b: 120
-                    }),
-                    entry.platform,
-                    entry.username,
-                    SetForegroundColor(Color::White)
-                )?;
-            }
-            writeln!(stdout, "Enter \"qq\" to quit.")?;
-            loop {
-                write!(stdout, "Search: ")?;
-                let mut buf = String::new();
-                stdout.flush()?;
-                stdin.read_line(&mut buf)?;
-                if buf.trim() == "qq".to_string() {
-                    writeln!(stdout, "quitting...")?;
-                    break;
-                }
-                match buf.trim().parse::<u32>() {
-                    Ok(num) => {
-                        let entry = &entries[(num - 1) as usize];
-                        writeln!(
-                            stdout,
-                            "Platform: {}\nUsername: {}\nPassword: {}",
-                            entry.platform, entry.username, entry.password
-                        )?;
-                    }
-                    Err(_) => {
-                        let mut count = 0;
-                        for entry in &mut entries {
-                            if entry.platform.contains(&buf.trim())
-                                || entry.username.contains(&buf.trim())
-                            {
-                                count += 1;
-
-                                writeln!(
-                                    stdout,
-                                    "{}. {}Platform: {}, Username: {}{}",
-                                    entry.chrono,
-                                    SetForegroundColor(Color::Rgb {
-                                        r: 219,
-                                        g: 87,
-                                        b: 120
-                                    }),
-                                    entry.platform,
-                                    entry.username,
-                                    SetForegroundColor(Color::White)
-                                )?;
-                            }
-                        }
-                    }
-                }
-            }
-            init(magic);
-        }
+        2 => bl_read::read(magic).unwrap(),
         _ => writeln!(stdout, "wot").unwrap(),
     };
     Ok(())
