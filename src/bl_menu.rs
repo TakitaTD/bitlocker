@@ -1,4 +1,5 @@
 mod bl_add;
+mod bl_delete;
 #[path = "./bl_fs.rs"]
 mod bl_fs;
 mod bl_read;
@@ -85,6 +86,7 @@ pub fn init(magic: MagicCrypt256) -> Result<(), io::Error> {
     match user_input {
         1 => bl_add::add(magic).unwrap(),
         2 => bl_read::read(magic).unwrap(),
+        3 => bl_delete::delete(magic).unwrap(),
         _ => writeln!(stdout, "wot").unwrap(),
     };
     Ok(())

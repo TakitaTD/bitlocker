@@ -35,13 +35,14 @@ fn main() -> Result<(), std::io::Error> {
             master_file.read_to_string(&mut buf)?;
 
             match magic.decrypt_base64_to_string(buf) {
-                Err(_) => {
+                Err(err) => {
                     writeln!(
                         stdout,
                         "{}error:{} Wrong Password! exiting...",
                         SetForegroundColor(Color::Red),
                         SetForegroundColor(Color::White)
                     )?;
+                    writeln!(stdout, "error message: {err}");
                     std::process::exit(1);
                 }
                 _ => {}
