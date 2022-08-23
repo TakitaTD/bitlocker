@@ -16,38 +16,44 @@ fn main() -> Result<(), std::io::Error> {
             write!(stdout, "{}", SetForegroundColor(Color::Red))?;
             write!(
                 stdout,
-                "{}ACCESS DENIED{}\nPlease enter your password: ",
+                "{}ACCESS DENIED{}\n",
                 SetForegroundColor(Color::DarkRed),
                 SetForegroundColor(Color::White)
             )?;
-            stdout.flush()?;
+            let mut magic;
 
-            let pw = rpassword::read_password()?;
+            loop {
+                write!(stdout, "Please enter your password: ")?;
+                stdout.flush()?;
 
-            let magic = new_magic_crypt!(pw, 256);
+                let pw = rpassword::read_password()?;
 
-            let mut master_file = OpenOptions::new()
-                .create(true)
-                .write(true)
-                .read(true)
-                .open(bl_fs::bl_file())?;
-            let mut buf = String::new();
-            master_file.read_to_string(&mut buf)?;
+                magic = new_magic_crypt!(pw, 256);
 
-            match magic.decrypt_base64_to_string(buf) {
-                Err(err) => {
-                    writeln!(
-                        stdout,
-                        "{}error:{} Wrong Password! exiting...",
-                        SetForegroundColor(Color::Red),
-                        SetForegroundColor(Color::White)
-                    )?;
-                    writeln!(stdout, "error message: {err}");
-                    std::process::exit(1);
+                let mut master_file = OpenOptions::new()
+                    .create(true)
+                    .write(true)
+                    .read(true)
+                    .open(bl_fs::bl_file())?;
+                let mut buf = String::new();
+                master_file.read_to_string(&mut buf)?;
+                match magic.decrypt_base64_to_string(&buf) {
+                    Err(_) => {
+                        writeln!(
+                            stdout,
+                            "{}error:{} wrong password!",
+                            SetForegroundColor(Color::Red),
+                            SetForegroundColor(Color::White)
+                        )?;
+                    }
+                    _ => {
+                        break;
+                    }
                 }
-                _ => {}
             }
-            bl_menu::init(magic).unwrap();
+            loop {
+                bl_menu::init(magic.clone()).unwrap();
+            }
         }
         false => {
             write!(

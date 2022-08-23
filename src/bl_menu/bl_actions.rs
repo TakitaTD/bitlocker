@@ -63,7 +63,6 @@ pub fn bl_use(
         stdout.flush()?;
         stdin.read_line(&mut buf)?;
         if buf.trim() == "qq".to_string() {
-            writeln!(stdout, "quitting...")?;
             break;
         }
         match buf.trim().parse::<u32>() {

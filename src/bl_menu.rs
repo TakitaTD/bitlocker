@@ -4,41 +4,21 @@ mod bl_add;
 mod bl_fs;
 #[path = "./bl_types.rs"]
 mod bl_types;
-use crossterm::style::{Color, ContentStyle, SetForegroundColor, SetStyle};
-use magic_crypt::{MagicCrypt256, MagicCryptTrait};
-use rand::Rng;
-use std::{
-    fs::OpenOptions,
-    io::{self, Read, Write},
-};
-// use std::io::{self, Write};
+use crossterm::style::{Color, SetForegroundColor};
+use magic_crypt::MagicCrypt256;
+// use std::io;
+use std::io::{self, Write};
 // extern crate bitlocker;
 pub fn init(magic: MagicCrypt256) -> Result<(), io::Error> {
     let mut stdout = io::stdout();
     let stdin = io::stdin();
-
-    // write!(stdout, "\r");
-    write!(stdout, "{esc}[2J{esc}[1;1H", esc = 27 as char);
-
-    let mut entries = OpenOptions::new()
-        .read(true)
-        .open(bl_fs::bl_file())
-        .unwrap();
-    let mut entries_str = String::new();
-    entries.read_to_string(&mut entries_str);
-    let mut entries = serde_json::from_str::<Vec<bl_types::Entry>>(
-        magic
-            .decrypt_base64_to_string(entries_str)
-            .unwrap()
-            .as_str(),
-    )
-    .unwrap();
-
-    // writeln!(stdout, "{:?}", entries)?;
-    let mut rng = rand::thread_rng();
-    let mut count = 0;
-    write!(stdout, "{}", SetForegroundColor(Color::White));
-
+    write!(stdout, "{}", SetForegroundColor(Color::White))?;
+    write!(
+        stdout,
+        "{}",
+        crossterm::terminal::Clear(crossterm::terminal::ClearType::All)
+    )?;
+    write!(stdout, "\x1B[2J\x1B[1;1H")?;
     write!(
         stdout,
         "1. Add a password\n2. Read a password\n3. Delete a password\n"

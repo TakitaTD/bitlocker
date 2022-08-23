@@ -31,7 +31,7 @@ pub fn add(magic: MagicCrypt256) -> Result<(), std::io::Error> {
         .write(true)
         .open(bl_fs::bl_file())?;
     let mut entries = String::new();
-    entries_file.read_to_string(&mut entries);
+    entries_file.read_to_string(&mut entries)?;
     let mut entries = serde_json::from_str::<Vec<bl_types::Entry>>(
         magic
             .decrypt_base64_to_string(entries.as_str())
