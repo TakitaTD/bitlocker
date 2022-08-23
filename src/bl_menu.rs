@@ -1,8 +1,6 @@
-#[path = "./bl_add.rs"]
 mod bl_add;
 #[path = "./bl_fs.rs"]
 mod bl_fs;
-#[path = "./bl_read.rs"]
 mod bl_read;
 #[path = "./bl_types.rs"]
 mod bl_types;

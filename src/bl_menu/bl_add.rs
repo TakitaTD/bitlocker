@@ -1,6 +1,5 @@
-#[path = "./bl_fs.rs"]
-mod bl_fs;
-#[path = "./bl_types.rs"]
+use crate::bl_fs;
+#[path = "../bl_types.rs"]
 mod bl_types;
 use magic_crypt::{MagicCrypt256, MagicCryptTrait};
 use rpassword;
