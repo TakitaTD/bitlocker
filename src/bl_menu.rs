@@ -115,7 +115,11 @@ pub fn init(magic: MagicCrypt256) -> Result<(), io::Error> {
                 match buf.trim().parse::<u32>() {
                     Ok(num) => {
                         let entry = &entries[(num - 1) as usize];
-                        writeln!(stdout, "Platform: {}\nUsername: {}\nPassword: {}", entry.platform, entry.username, entry.password)?;
+                        writeln!(
+                            stdout,
+                            "Platform: {}\nUsername: {}\nPassword: {}",
+                            entry.platform, entry.username, entry.password
+                        )?;
                     }
                     Err(_) => {
                         let mut count = 0;
