@@ -1,8 +1,7 @@
+mod bl_actions;
 mod bl_add;
-mod bl_delete;
 #[path = "./bl_fs.rs"]
 mod bl_fs;
-mod bl_read;
 #[path = "./bl_types.rs"]
 mod bl_types;
 use crossterm::style::{Color, ContentStyle, SetForegroundColor, SetStyle};
@@ -85,8 +84,8 @@ pub fn init(magic: MagicCrypt256) -> Result<(), io::Error> {
     }
     match user_input {
         1 => bl_add::add(magic).unwrap(),
-        2 => bl_read::read(magic).unwrap(),
-        3 => bl_delete::delete(magic).unwrap(),
+        2 => bl_actions::bl_use(magic, false, &bl_actions::read).unwrap(),
+        3 => bl_actions::bl_use(magic, true, &bl_actions::del).unwrap(),
         _ => writeln!(stdout, "wot").unwrap(),
     };
     Ok(())
