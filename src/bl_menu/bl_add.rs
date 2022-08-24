@@ -11,16 +11,28 @@ pub fn add(magic: MagicCrypt256) -> Result<(), std::io::Error> {
     let mut stdout = stdout();
     let stdin = stdin();
     let mut entry = bl_types::Entry::defaults();
+    write!(stdout, "Read: ")?;
+
     write!(stdout, "Enter the platform: ")?;
     stdout.flush()?;
     stdin.read_line(&mut entry.platform)?;
+    if entry.platform.trim() == "qq" {
+        return Ok(());
+    }
     write!(stdout, "Enter your username: ")?;
     stdout.flush()?;
     stdin.read_line(&mut entry.username)?;
+    if entry.username.trim() == "qq" {
+        return Ok(());
+    }
 
     write!(stdout, "Enter your password: ")?;
     stdout.flush()?;
     entry.password = rpassword::read_password().unwrap();
+
+    if entry.password.trim() == "qq" {
+        return Ok(());
+    }
 
     entry.platform = entry.platform.trim().to_string();
     entry.username = entry.username.trim().to_string();
