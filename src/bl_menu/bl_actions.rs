@@ -125,7 +125,7 @@ pub fn del(magic: MagicCrypt256, entry_index: u32, entries: &Vec<bl_types::Entry
     // std::process::exit(0);
 }
 pub fn read(magic: MagicCrypt256, entry_index: u32, entries: &Vec<bl_types::Entry>) {
-    let entry = &entries.to_vec()[entry_index as usize];
+    let entry = &entries[entry_index as usize];
     let mut stdout = io::stdout();
     writeln!(
         stdout,
