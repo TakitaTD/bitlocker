@@ -11,6 +11,8 @@ mod bl_menu;
 
 fn main() -> Result<(), std::io::Error> {
     let mut stdout = std::io::stdout();
+    // bl_fs::CLIArgs::parse();
+
     match Path::new(&bl_fs::bl_file()).exists() {
         true => {
             write!(stdout, "{}", SetForegroundColor(Color::Red))?;

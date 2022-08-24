@@ -40,7 +40,9 @@ pub fn bl_use(
             count += 1;
             entry.chrono = count;
         }
-        if verbose || !ketamine {
+        if verbose || !ketamine
+        /* i couldnt think of anything else to call it ok */
+        {
             for entry in &mut entries {
                 writeln!(
                     stdout,
