@@ -18,7 +18,7 @@ fn main() -> Result<(), std::io::Error> {
                 stdout,
                 "{}ACCESS DENIED{}\n",
                 SetForegroundColor(Color::DarkRed),
-                SetForegroundColor(Color::White)
+                SetForegroundColor(Color::Reset)
             )?;
             let mut magic;
 
@@ -37,19 +37,16 @@ fn main() -> Result<(), std::io::Error> {
                     .open(bl_fs::bl_file())?;
                 let mut buf = String::new();
                 master_file.read_to_string(&mut buf)?;
-                match magic.decrypt_base64_to_string(&buf) {
-                    Err(_) => {
-                        writeln!(
-                            stdout,
-                            "{}error:{} wrong password!",
-                            SetForegroundColor(Color::Red),
-                            SetForegroundColor(Color::White)
-                        )?;
-                    }
-                    _ => {
-                        break;
-                    }
+                if let Err(_) = magic.decrypt_base64_to_string(&buf) {
+                    writeln!(
+                        stdout,
+                        "{}error:{} wrong password!",
+                        SetForegroundColor(Color::Red),
+                        SetForegroundColor(Color::Reset)
+                    )?;
+                    continue;
                 }
+                break;
             }
             loop {
                 bl_menu::init(magic.clone()).unwrap();
@@ -59,7 +56,7 @@ fn main() -> Result<(), std::io::Error> {
             write!(
                 stdout,
                 "{}Set up your master password: ",
-                SetForegroundColor(Color::White)
+                SetForegroundColor(Color::Reset)
             )?;
 
             stdout.flush()?;

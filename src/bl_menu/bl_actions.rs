@@ -13,7 +13,7 @@ use std::io::{self, Read, Write};
 pub fn bl_use(
     magic: MagicCrypt256,
     verbose: bool,
-    fun: &dyn Fn(MagicCrypt256, u32, &Vec<bl_types::Entry>),
+    fun: &dyn Fn(&MagicCrypt256, u32, &Vec<bl_types::Entry>),
 ) -> Result<(), std::io::Error> {
     let mut stdout = io::stdout();
     let stdin = io::stdin();
@@ -53,7 +53,7 @@ pub fn bl_use(
                     }),
                     entry.platform,
                     entry.username,
-                    SetForegroundColor(Color::White)
+                    SetForegroundColor(Color::Reset)
                 )?;
             }
         }
@@ -72,10 +72,10 @@ pub fn bl_use(
                         stdout,
                         "{}error:{} entry out of range",
                         SetForegroundColor(Color::DarkRed),
-                        SetForegroundColor(Color::White)
+                        SetForegroundColor(Color::Reset)
                     )?;
                 } else {
-                    fun(magic.clone(), num - 1, &entries);
+                    fun(&magic, num - 1, &entries);
                 }
             }
             Err(_) => {
@@ -93,7 +93,7 @@ pub fn bl_use(
                             }),
                             entry.platform,
                             entry.username,
-                            SetForegroundColor(Color::White)
+                            SetForegroundColor(Color::Reset)
                         )?;
                     }
                 }
@@ -104,7 +104,7 @@ pub fn bl_use(
     Ok(())
 }
 
-pub fn del(magic: MagicCrypt256, entry_index: u32, entries: &Vec<bl_types::Entry>) {
+pub fn del(magic: &MagicCrypt256, entry_index: u32, entries: &Vec<bl_types::Entry>) {
     // let mut stdout = io::stdout();
     let mut entries = entries.to_vec();
     entries.remove(entry_index as usize);
@@ -124,7 +124,7 @@ pub fn del(magic: MagicCrypt256, entry_index: u32, entries: &Vec<bl_types::Entry
         .unwrap();
     // std::process::exit(0);
 }
-pub fn read(magic: MagicCrypt256, entry_index: u32, entries: &Vec<bl_types::Entry>) {
+pub fn read(magic: &MagicCrypt256, entry_index: u32, entries: &Vec<bl_types::Entry>) {
     let entry = &entries[entry_index as usize];
     let mut stdout = io::stdout();
     writeln!(
@@ -138,7 +138,7 @@ pub fn read(magic: MagicCrypt256, entry_index: u32, entries: &Vec<bl_types::Entr
         entry.platform,
         entry.username,
         entry.password,
-        SetForegroundColor(Color::White)
+        SetForegroundColor(Color::Reset)
     )
     .unwrap();
 }

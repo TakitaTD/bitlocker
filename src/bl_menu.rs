@@ -12,16 +12,18 @@ use std::io::{self, Write};
 pub fn init(magic: MagicCrypt256) -> Result<(), io::Error> {
     let mut stdout = io::stdout();
     let stdin = io::stdin();
-    write!(stdout, "{}", SetForegroundColor(Color::White))?;
+    write!(stdout, "{}", SetForegroundColor(Color::Reset))?;
     write!(
         stdout,
         "{}",
         crossterm::terminal::Clear(crossterm::terminal::ClearType::All)
     )?;
-    write!(stdout, "\x1B[2J\x1B[1;1H")?;
+    // write!(stdout, "\x1B[2J\x1B[1;1H")?;
     write!(
         stdout,
-        "1. Add a password\n2. Read a password\n3. Delete a password\n"
+        "{}TIP:{} Type \"qq\" at any time to quit!\n1. Add a password\n2. Read a password\n3. Delete a password\n",
+        SetForegroundColor(Color::Green),
+        SetForegroundColor(Color::Reset),
     )?;
     let user_input;
     loop {
@@ -29,10 +31,6 @@ pub fn init(magic: MagicCrypt256) -> Result<(), io::Error> {
         write!(stdout, "> ")?;
         stdout.flush()?;
         stdin.read_line(&mut buf)?;
-        //if buf.trim() == "q".to_string() {
-        //    writeln!(stdout, "quitting..")?;
-        //    break;
-        //}
         match buf.trim().parse::<u8>() {
             Ok(num) => {
                 if num > 3 {
@@ -40,7 +38,7 @@ pub fn init(magic: MagicCrypt256) -> Result<(), io::Error> {
                         stdout,
                         "{}error:{} number out of range",
                         SetForegroundColor(Color::DarkRed),
-                        SetForegroundColor(Color::White)
+                        SetForegroundColor(Color::Reset)
                     )?;
                     continue;
                 }
@@ -48,7 +46,7 @@ pub fn init(magic: MagicCrypt256) -> Result<(), io::Error> {
                 break;
             }
             Err(err) => {
-                if buf.trim() == "q" {
+                if buf.trim() == "qq" {
                     writeln!(stdout, "quitting...")?;
                     std::process::exit(0);
                 }
@@ -56,7 +54,7 @@ pub fn init(magic: MagicCrypt256) -> Result<(), io::Error> {
                     stdout,
                     "{}error:{} {err}",
                     SetForegroundColor(Color::DarkRed),
-                    SetForegroundColor(Color::White)
+                    SetForegroundColor(Color::Reset)
                 )?;
                 continue;
             }
