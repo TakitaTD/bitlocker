@@ -11,7 +11,6 @@ pub fn add(magic: MagicCrypt256) -> Result<(), std::io::Error> {
     let mut stdout = stdout();
     let stdin = stdin();
     let mut entry = bl_types::Entry::defaults();
-    write!(stdout, "Read: ")?;
 
     write!(stdout, "Enter the platform: ")?;
     stdout.flush()?;
@@ -41,6 +40,7 @@ pub fn add(magic: MagicCrypt256) -> Result<(), std::io::Error> {
     let mut entries_file = OpenOptions::new()
         .read(true)
         .write(true)
+        .create(true)
         .open(bl_fs::bl_file())?;
     let mut entries = String::new();
     entries_file.read_to_string(&mut entries)?;

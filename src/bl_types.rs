@@ -9,6 +9,13 @@ pub struct Entry {
     pub id: String,
     pub chrono: u32,
 }
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
+pub struct EntryData {
+    pub platform: String,
+    pub username: String,
+    pub chrono: u32,
+    pub filename: String,
+}
 impl Entry {
     pub fn new(password: &str, platform: &str, username: &str, id: Uuid) -> Self {
         Self {
@@ -26,6 +33,14 @@ impl Entry {
             username: "".to_string(),
             id: Uuid::new_v4().to_string(),
             chrono: 0,
+        }
+    }
+    pub fn to_entry_data(&self) -> EntryData {
+        EntryData {
+            platform: self.platform.clone(),
+            username: self.username.clone(),
+            chrono: 0,
+            filename: self.id.clone(),
         }
     }
 }

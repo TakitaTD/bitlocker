@@ -7,7 +7,9 @@ use magic_crypt::{new_magic_crypt, MagicCryptTrait};
 use std::fs::{create_dir_all, OpenOptions};
 use std::io::{Read, Write};
 use std::path::Path;
+// mod bl_add;
 mod bl_menu;
+mod bl_types;
 
 fn main() -> Result<(), std::io::Error> {
     let mut stdout = std::io::stdout();

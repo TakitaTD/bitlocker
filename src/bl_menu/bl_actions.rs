@@ -1,6 +1,5 @@
-use crate::bl_fs;
-#[path = "../bl_types.rs"]
-mod bl_types;
+use crate::bl_fs::{self, get_entries};
+use crate::bl_types;
 use crossterm::style::*;
 use magic_crypt::{MagicCrypt256, MagicCryptTrait};
 use std::fs::OpenOptions;
@@ -23,19 +22,7 @@ pub fn bl_use(
     loop {
         let mut count = 0;
 
-        let mut entries = OpenOptions::new()
-            .read(true)
-            .open(bl_fs::bl_file())
-            .unwrap();
-        let mut entries_str = String::new();
-        entries.read_to_string(&mut entries_str)?;
-        let mut entries = serde_json::from_str::<Vec<bl_types::Entry>>(
-            magic
-                .decrypt_base64_to_string(entries_str)
-                .unwrap()
-                .as_str(),
-        )
-        .unwrap();
+        let mut entries = bl_fs::get_entries(&magic);
         for entry in &mut entries {
             count += 1;
             entry.chrono = count;
@@ -115,7 +102,7 @@ pub fn del(magic: &MagicCrypt256, entry_index: u32, entries: &Vec<bl_types::Entr
         .write(true)
         .open(bl_fs::bl_file())
         .unwrap();
-    // entries_file.seek(SeekFrom::Start(0)).expect("cant seek");
+
     entries_file.set_len(0).unwrap();
     entries_file
         .write_all(
