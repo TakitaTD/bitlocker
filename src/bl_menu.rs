@@ -22,7 +22,7 @@ pub fn init(magic: MagicCrypt256) -> Result<(), io::Error> {
     // write!(stdout, "\x1B[2J\x1B[1;1H")?;
     write!(
         stdout,
-        "{}TIP:{} Type \"qq\" at any time to quit!\n1. Add a password\n2. Read a password\n3. Delete a password\n",
+        "{}TIP:{} Type \"qq\" at any time to quit!\n1. Add a password\n2. Read a password\n3. Delete a password\n4. Change Master Password\n",
         SetForegroundColor(Color::Green),
         SetForegroundColor(Color::Reset),
     )?;
@@ -34,7 +34,7 @@ pub fn init(magic: MagicCrypt256) -> Result<(), io::Error> {
         stdin.read_line(&mut buf)?;
         match buf.trim().parse::<u8>() {
             Ok(num) => {
-                if num > 3 {
+                if num > 4 {
                     writeln!(
                         stdout,
                         "{}error:{} number out of range",
@@ -65,6 +65,7 @@ pub fn init(magic: MagicCrypt256) -> Result<(), io::Error> {
         1 => bl_add::add(magic).unwrap(),
         2 => bl_actions::bl_use(magic, false, &bl_actions::read).unwrap(),
         3 => bl_actions::bl_use(magic, true, &bl_actions::del).unwrap(),
+        4 => bl_actions::change_password(&magic),
         _ => writeln!(stdout, "wot").unwrap(),
     };
     Ok(())

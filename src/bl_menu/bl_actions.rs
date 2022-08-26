@@ -1,7 +1,7 @@
 use crate::bl_fs::{self, get_entries};
 use crate::bl_types;
 use crossterm::style::*;
-use magic_crypt::{MagicCrypt256, MagicCryptTrait};
+use magic_crypt::{new_magic_crypt, MagicCrypt256, MagicCryptTrait};
 use std::fs::OpenOptions;
 use std::io::{self, Read, Write};
 
@@ -113,7 +113,7 @@ pub fn del(magic: &MagicCrypt256, entry_index: u32, entries: &Vec<bl_types::Entr
         .unwrap();
     // std::process::exit(0);
 }
-pub fn read(magic: &MagicCrypt256, entry_index: u32, entries: &Vec<bl_types::Entry>) {
+pub fn read(_: &MagicCrypt256, entry_index: u32, entries: &Vec<bl_types::Entry>) {
     let entry = &entries[entry_index as usize];
     let mut stdout = io::stdout();
     writeln!(
@@ -130,4 +130,28 @@ pub fn read(magic: &MagicCrypt256, entry_index: u32, entries: &Vec<bl_types::Ent
         SetForegroundColor(Color::Reset)
     )
     .unwrap();
+}
+pub fn change_password(magic: &MagicCrypt256) {
+    // let mut entries_file =
+
+    let mut entries = &bl_fs::get_entries(&magic);
+
+    let mut entries_file = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(bl_fs::bl_file())
+        .unwrap();
+    write!(io::stdout(), "Enter your new password: ").unwrap();
+    io::stdout().flush();
+    let pw = rpassword::read_password().unwrap();
+    let mut magic = new_magic_crypt!(pw, 256);
+    entries_file.set_len(0).unwrap();
+
+    entries_file
+        .write_all(
+            magic
+                .encrypt_str_to_base64(serde_json::to_string(&entries).unwrap())
+                .as_bytes(),
+        )
+        .unwrap();
 }
